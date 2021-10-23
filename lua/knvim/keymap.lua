@@ -21,13 +21,13 @@ keymap.store = __MapStore
 ---@return string
 local function create_mapping(rhs, opts)
   local id = keymap.create(rhs)
-  local fmt_str = [[<cmd>lua require('personal.keymap')[%s]()<CR>]]
+  local fmt_str = [[<cmd>lua require('knvim.keymap')[%s]()<CR>]]
   if opts.expr then
-    fmt_str = [[luaeval("require('personal.keymap')[%s]()")]]
+    fmt_str = [[luaeval("require('knvim.keymap')[%s]()")]]
   end
   local str_rhs = string.format(fmt_str, tostring(id))
   if opts.bufnr then
-    local str_autocmd = [[autocmd BufDelete %s ++once :lua require('personal.keymap').remove(%d)]]
+    local str_autocmd = [[autocmd BufDelete %s ++once :lua require('knvim.keymap').remove(%d)]]
     str_autocmd = string.format(str_autocmd, vim.api.nvim_buf_get_name(opts.bufnr or 0), id)
     vim.api.nvim_exec(str_autocmd, false)
   end
