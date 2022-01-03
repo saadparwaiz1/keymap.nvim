@@ -32,7 +32,7 @@ function keymap.map(lhs, rhs, opts)
 	opts.mode = opts.mode or "n"
 	if vim.is_callable(rhs) then
 		options.callback = rhs
-		rhs = ''
+		rhs = ""
 	end
 	if type(opts.mode) == "table" then
 		for _, v in pairs(opts.mode) do
@@ -71,7 +71,11 @@ function keymap.tmp(lhs, rhs, opts)
 	opts = opts or {}
 	opts.buffer = opts.buffer or 0
 	local mode = opts.mode or "n"
-	local d_rhs = vim.fn.maparg(lhs, mode, false, true)
+	local d_rhs = vim.tbl_filter(function (x)
+	  return x['lhs'] == lhs
+	end, vim.api.nvim_buf_get_keymap(opts.buffer, mode))
+  d_rhs = d_rhs or {}
+  d_rhs = d_rhs[1] or {}
 	__temp_map[mode] = __temp_map[mode] or {}
 	__temp_map[mode][lhs] = d_rhs
 	keymap.map(lhs, rhs, opts)
@@ -80,17 +84,16 @@ end
 function keymap.revert(lhs, mode)
 	mode = mode or "n"
 	local opts = __temp_map[mode][lhs]
+  __temp_map[mode][lhs] = nil
 	keymap.del(lhs, mode, 0)
-	if opts["rhs"] == nil then
+	if opts["rhs"] == nil and opts["callback"] == nil then
 		return
 	end
-	opts.expr = opts.expr == 1
-	opts.script = opts.script == 1
-	opts.silent = opts.silent == 1
-	opts.nowait = opts.nowait == 1
-	opts.noremap = opts.noremap == 1
-	opts.buffer = 0
-	keymap.map(lhs, opts["rhs"], opts)
+	opts["rhs"] = opts["rhs"] or opts["callback"]
+  if opts["rhs"] == nil then
+    return
+  end
+  keymap.map(lhs, opts["rhs"], opts)
 end
 
 -- Wrapper over neovim keymap api to set keymaps using a table
