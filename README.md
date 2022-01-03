@@ -25,10 +25,10 @@ keymap.map('K', vim.lsp.buf.hover, {mode='i', noremap=false, expr=true})
 keymap.map('K', vim.lsp.buf.hover, {mode={'i', 'n'}, noremap=false, expr=true})
 
 -- buffer local map by default current buffer
-keymap.map_local('K', vim.lsp.buf.hover)
+keymap.map('K', vim.lsp.buf.hover, {buffer=0})
 
 -- buffer local map for specific buffer
-keymap.map_local('K', vim.lsp.buf.hover, {bufnr=40})
+keymap.map('K', vim.lsp.buf.hover, {buffer=40})
 ```
 ### Delete a Keymap
 
@@ -40,7 +40,7 @@ keymap.del('K', 'i')
 keymap.del('K', {'i', 'n'})
 
 -- Delete buffer local keymap
-keymap.del_local('K', 'i')
+keymap.del'K', 'i', {buffer=0})
 ```
 
 ### Temporary Map a Key For Buffer
